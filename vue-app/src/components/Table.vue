@@ -56,10 +56,13 @@
               <div>
                 <td
                   :style="{
-                    cursor: tableRow.kids.has_relatives ? 'pointer' : '',
+                    cursor: record.kids.has_phone ? 'pointer' : '',
                   }"
                 >
-                  {{ tableRow.kids.has_relatives ? 'Expand' : '' }}
+                  {{
+                    // @ts-ignore
+                    record.kids.has_phone ? 'Expand' : ''
+                  }}
                 </td>
                 <td>{{ record.data['Relative ID'] }}</td>
                 <td>{{ record.data['Patient ID'] }}</td>
