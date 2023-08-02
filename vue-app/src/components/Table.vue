@@ -48,17 +48,28 @@
               <th>Frequency of visits</th>
             </tr>
             <tr
-              v-for="(record, index) in tableRow.kids.has_relatives.records"
+              v-for="(record, indexInner) in tableRow.kids.has_relatives
+                .records"
               :key="index"
+              @click="toggleInnerTable2(index, indexInner)"
             >
               <div>
+                <td
+                  :style="{
+                    cursor: tableRow.kids.has_relatives ? 'pointer' : '',
+                  }"
+                >
+                  {{ tableRow.kids.has_relatives ? 'Expand' : '' }}
+                </td>
                 <td>{{ record.data['Relative ID'] }}</td>
                 <td>{{ record.data['Patient ID'] }}</td>
                 <td>{{ record.data['Is alive'] }}</td>
                 <td>{{ record.data['Frequency of visits'] }}</td>
               </div>
               <table
-                v-if="record.kids.has_phone"
+                v-if="
+                  record.kids.has_phone && hashtable.get(index)?.get(indexInner)
+                "
                 style="background-color: darkcyan"
               >
                 <tr>
@@ -67,7 +78,8 @@
                   <th>Phone</th>
                 </tr>
                 <tr
-                  v-for="(phone, index) in record.kids.has_phone.records"
+                  v-for="(phone, indexInnerInner) in record.kids.has_phone
+                    .records"
                   :key="index"
                 >
                   <td>{{ phone.data['Phone ID'] }}</td>
@@ -88,26 +100,28 @@ export default {
   data() {
     return {
       showInnerTable: [] as boolean[],
-      tableRow: {
-        kids: {
-          has_relatives: {
-            records: [] as any[], // Replace with the actual type of records for the outer table
-          },
-        },
-      },
+      hashtable: new Map<number, Map<number, boolean>>(),
     };
-  },
-  created() {
-    // Initialize the visibility state of inner tables to false for all rows
-    this.showInnerTable = new Array(
-      this.tableRow.kids.has_relatives.records.length
-    ).fill(false);
   },
   methods: {
     toggleInnerTable(index: number) {
-      console.log(index);
-      // Toggle the visibility state for the corresponding row
       this.showInnerTable[index] = !this.showInnerTable[index];
+    },
+    toggleInnerTable2(index: number, indexInner: number) {
+      const innerMap = this.hashtable.get(index) || new Map<number, boolean>();
+      // Check if the value is already set
+      const isSet = innerMap.get(indexInner);
+
+      // If the value is not set, set it to true
+      if (!isSet) {
+        innerMap.set(indexInner, true);
+      } else {
+        // Otherwise, set it to false
+        innerMap.set(indexInner, false);
+      }
+
+      // Set the updated inner Map back into the outer Map
+      this.hashtable.set(index, innerMap);
     },
   },
 };
@@ -839,6 +853,7 @@ td {
 
 tr {
   // background-color: darkgray;
+  border-radius: 10px;
   opacity: 0.6;
 }
 

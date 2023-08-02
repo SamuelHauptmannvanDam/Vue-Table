@@ -12,6 +12,5 @@ import Table from '../components/Table.vue';
 .about {
   display: flex;
   justify-content: center;
-  /* overflow-y: scroll; */
 }
 </style>
